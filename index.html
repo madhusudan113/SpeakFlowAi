@@ -261,56 +261,6 @@ button:disabled{
     display:block;
 }
 
-/* Sticky, full-height practice workspace */
-.page#practice.active{
-    height:calc(100vh - 60px);
-    min-height:620px;
-    overflow:hidden;
-}
-.page#practice .page-header{
-    position:sticky;
-    top:0;
-    z-index:20;
-    background:rgba(247,247,250,.96);
-    backdrop-filter:blur(12px);
-    padding:8px 0 14px;
-    margin-bottom:12px;
-}
-.page#practice .practice-layout{
-    height:calc(100% - 78px);
-    min-height:0;
-}
-.page#practice .conversation-card{
-    height:100%;
-    min-height:0;
-}
-.page#practice .conversation-body{
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-    scroll-behavior:smooth;
-    overscroll-behavior:contain;
-}
-.page#practice .controls{
-    flex:0 0 auto;
-    position:sticky;
-    bottom:0;
-    z-index:10;
-    background:rgba(255,255,255,.98);
-}
-@media(max-width:1050px){
-    .page#practice.active{height:auto;min-height:calc(100vh - 36px);overflow:visible;}
-    .page#practice .page-header{position:sticky;top:0;}
-    .page#practice .practice-layout{height:calc(100vh - 150px);min-height:520px;}
-}
-@media(max-width:850px){
-    .page#practice.active{height:calc(100vh - 36px);overflow:hidden;}
-    .page#practice .page-header{padding-top:0;}
-    .page#practice .practice-layout{height:calc(100% - 92px);min-height:0;}
-    .page#practice .conversation-body{padding:18px;}
-}
-
-
 .page-header{
     display:flex;
     justify-content:space-between;
@@ -1574,6 +1524,285 @@ button{border:0}
 .feature-note{margin-top:10px;font-size:11px;color:var(--muted)}
 @media(max-width:850px){.overlay.show{display:block}.sidebar{box-shadow:20px 0 40px rgba(0,0,0,.2)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+
+
+
+/* =========================================================
+   SPEAKFLOW PREMIUM RESPONSIVE UI — 2026 REFRESH
+========================================================= */
+:root{
+  --bg:#f5f6fb;
+  --surface:#ffffff;
+  --surface-soft:#fafaff;
+  --primary:#6d4aff;
+  --primary2:#9a7cff;
+  --primary-dark:#4d35c4;
+  --ink:#17151f;
+  --muted:#77758a;
+  --line:#e9e7f1;
+  --shadow-soft:0 10px 35px rgba(43,31,91,.07);
+  --shadow-card:0 18px 55px rgba(43,31,91,.10);
+  --radius-lg:24px;
+  --radius-md:16px;
+}
+
+body{
+  background:
+    radial-gradient(circle at 8% 0%,rgba(120,88,255,.08),transparent 28%),
+    radial-gradient(circle at 95% 10%,rgba(150,120,255,.07),transparent 25%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+
+button,.topic,.day-card,.stat,.card,.panel-section,.conversation-card{
+  -webkit-tap-highlight-color:transparent;
+}
+
+button{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,opacity .18s ease}
+button:active{transform:scale(.98)}
+
+/* Premium sidebar */
+.sidebar{
+  width:268px;
+  padding:28px 17px 18px;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(128,99,255,.28),transparent 28%),
+    linear-gradient(180deg,#17131f 0%,#0f0d15 100%);
+  border-right:1px solid rgba(255,255,255,.06);
+  box-shadow:18px 0 50px rgba(24,18,42,.08);
+}
+.logo{
+  margin:3px 10px 42px;
+  font-size:26px;
+  letter-spacing:-1px;
+}
+.logo span{color:#9b83ff}
+.nav button{
+  position:relative;
+  padding:13px 15px;
+  border-radius:13px;
+  font-weight:650;
+}
+.nav button:hover{transform:translateX(2px)}
+.nav button.active{
+  background:linear-gradient(100deg,rgba(112,79,255,.30),rgba(112,79,255,.08));
+  box-shadow:inset 3px 0 0 #8165ff,0 8px 24px rgba(0,0,0,.12);
+}
+.journey-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
+  backdrop-filter:blur(10px);
+  border-color:rgba(255,255,255,.09);
+}
+
+/* Main layout */
+.main{
+  width:calc(100% - 268px);
+  margin-left:268px;
+  padding:32px clamp(18px,3vw,42px) 44px;
+  max-width:none;
+}
+.page{max-width:1500px;margin:0 auto}
+.page-header{margin-bottom:24px}
+.page-title h1{font-size:clamp(24px,2.2vw,31px);font-weight:850}
+.page-title p{font-size:13px}
+
+/* Hero */
+.hero{
+  min-height:330px;
+  padding:clamp(28px,4vw,48px);
+  border-radius:30px;
+  background:
+    radial-gradient(circle at 80% 12%,rgba(255,255,255,.25),transparent 20%),
+    radial-gradient(circle at 100% 100%,rgba(255,255,255,.10),transparent 32%),
+    linear-gradient(135deg,#5d3de0 0%,#7554ef 48%,#9a7bff 100%);
+  box-shadow:0 28px 70px rgba(94,62,224,.23);
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  width:260px;height:260px;
+  right:-80px;bottom:-120px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:50%;
+  box-shadow:0 0 0 45px rgba(255,255,255,.025),0 0 0 90px rgba(255,255,255,.018);
+}
+.hero h2{font-size:clamp(30px,4vw,44px);letter-spacing:-1.6px}
+.hero p{font-size:14px;max-width:650px}
+.primary-button,.secondary-button{box-shadow:0 8px 22px rgba(24,16,66,.14)}
+.primary-button:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(24,16,66,.20)}
+.secondary-button:hover{background:rgba(255,255,255,.18);transform:translateY(-2px)}
+.hero-robot{font-size:clamp(75px,9vw,125px);margin-right:3vw}
+
+/* Stats */
+.stats{gap:18px}
+.stat,.card,.conversation-card,.panel-section{
+  box-shadow:var(--shadow-soft);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.stat:hover,.card:hover,.panel-section:hover{transform:translateY(-2px);box-shadow:var(--shadow-card);border-color:#ddd8f1}
+.stat{padding:22px}
+.stat-icon{box-shadow:inset 0 0 0 1px rgba(109,74,255,.08)}
+
+/* Practice: app-like workspace */
+.practice-layout{
+  grid-template-columns:minmax(0,1fr) 300px;
+  align-items:start;
+}
+.conversation-card{
+  height:calc(100vh - 150px);
+  min-height:620px;
+  max-height:900px;
+  border-radius:24px;
+  position:relative;
+}
+.conversation-header{
+  min-height:72px;
+  background:rgba(255,255,255,.96);
+  position:relative;
+  z-index:2;
+}
+.conversation-body{
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scroll-behavior:smooth;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(109,74,255,.035),transparent 35%),
+    #fff;
+}
+.conversation-body::-webkit-scrollbar{width:8px}
+.conversation-body::-webkit-scrollbar-thumb{background:#d8d3eb;border-radius:20px}
+.message{max-width:min(78%,680px)}
+.message-bubble{box-shadow:0 4px 14px rgba(35,25,75,.035)}
+.message.ai .message-bubble{border:1px solid #e8e2ff}
+.message.user .message-bubble{box-shadow:0 8px 22px rgba(104,71,245,.18)}
+.user-turn{
+  flex:none;
+  background:linear-gradient(135deg,#fbfaff,#f4f0ff);
+  box-shadow:0 -5px 22px rgba(75,54,140,.05);
+}
+.controls{
+  flex:none;
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(14px);
+  padding:14px 20px 17px;
+}
+.mic-button{box-shadow:0 13px 30px rgba(104,71,245,.32)}
+.mic-button:hover{box-shadow:0 17px 36px rgba(104,71,245,.40)}
+.right-panel{position:sticky;top:24px;align-self:start}
+.panel-section{border-radius:18px}
+.topic{transition:.18s ease}
+.topic:hover{transform:translateX(2px);background:#f4f1ff;border-color:#e0d9ff}
+.topic.selected{box-shadow:inset 3px 0 0 var(--primary)}
+
+/* Day plan */
+.days-grid{gap:14px}
+.day-card{
+  border-radius:17px;
+  padding:18px;
+  min-height:135px;
+  background:linear-gradient(145deg,#fff,#fbfaff);
+  border:1px solid var(--line);
+  box-shadow:0 8px 25px rgba(39,27,84,.055);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.day-card:hover{transform:translateY(-4px);box-shadow:0 16px 35px rgba(39,27,84,.11);border-color:#d8d0fa}
+.day-card.current{border-color:#8b73ff;box-shadow:0 12px 32px rgba(109,74,255,.15)}
+.day-card.completed{background:linear-gradient(145deg,#fbfffd,#f4fff9);border-color:#cceedd}
+.day-card.locked{opacity:.58;filter:grayscale(.1)}
+.day-number{font-size:10px;letter-spacing:1px;color:var(--primary);font-weight:900}
+.day-card h3{font-size:15px;margin-top:10px;line-height:1.35}
+.day-status{margin-top:14px;font-size:11px}
+
+/* Report/settings polish */
+.score-grid{gap:14px}
+.settings-card input,.settings-card select{border-radius:12px}
+
+/* Mobile header */
+.mobile-header{
+  position:sticky;
+  top:0;
+  z-index:80;
+  padding:11px 0 14px;
+  background:linear-gradient(var(--bg) 72%,transparent);
+  backdrop-filter:blur(10px);
+}
+.mobile-header strong{font-size:18px;letter-spacing:-.5px}
+.menu{box-shadow:0 7px 20px rgba(17,16,25,.18)}
+
+/* Touch-friendly controls */
+.control-small{min-height:42px;padding:9px 13px}
+.topic{min-height:44px;display:flex;align-items:center}
+
+/* Tablet */
+@media(max-width:1100px){
+  .main{padding:26px 22px 36px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .practice-layout{grid-template-columns:minmax(0,1fr) 250px}
+  .hero-robot{margin-right:0}
+}
+
+@media(max-width:850px){
+  .main{width:100%;margin-left:0;padding:0 16px 30px}
+  .page{width:100%}
+  .mobile-header{display:flex}
+  .practice-layout{grid-template-columns:1fr}
+  .right-panel{display:block;position:static;order:2}
+  .conversation-card{height:calc(100vh - 125px);min-height:590px;max-height:none}
+  .conversation-body{padding:20px}
+  .hero{min-height:290px}
+}
+
+@media(max-width:640px){
+  .main{padding:0 11px 24px}
+  .page-header{gap:10px;align-items:flex-start}
+  .page-header>strong{font-size:12px;white-space:nowrap;margin-top:7px}
+  .hero{padding:25px 22px;border-radius:23px;min-height:0}
+  .hero h2{font-size:29px}
+  .hero p{font-size:13px;line-height:1.65}
+  .hero-buttons{flex-direction:column;align-items:stretch}
+  .primary-button,.secondary-button{width:100%;text-align:center}
+  .stats{grid-template-columns:repeat(2,1fr);gap:9px}
+  .stat{padding:14px;border-radius:15px}
+  .stat small{font-size:10px;margin-top:10px}
+  .stat strong{font-size:21px}
+  .home-grid{gap:12px}
+  .card{padding:17px}
+  .conversation-card{height:calc(100dvh - 115px);min-height:560px;border-radius:18px}
+  .conversation-header{padding:13px 15px;min-height:62px}
+  .teacher-avatar{width:39px;height:39px;font-size:18px}
+  .teacher-name{font-size:13px}
+  .conversation-header>div:last-child{display:none}
+  .conversation-body{padding:16px 13px}
+  .message{max-width:91%;margin-bottom:16px}
+  .message-bubble{padding:13px 14px;font-size:14px;border-radius:15px}
+  .user-turn{margin:0 12px 12px;padding:14px;border-radius:15px}
+  .target-sentence{font-size:17px}
+  .controls{padding:11px 12px 13px}
+  .control-row{gap:8px}
+  .mic-button{width:62px;height:62px;font-size:24px}
+  .control-small{font-size:11px;padding:8px 10px}
+  .timer{padding:8px 10px;min-width:67px;font-size:13px}
+  .days-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .day-card{min-height:118px;padding:14px}
+  .day-card h3{font-size:14px}
+}
+
+@media(max-width:390px){
+  .stats{grid-template-columns:1fr 1fr}
+  .hero h2{font-size:26px}
+  .hero-badge{font-size:10px}
+  .conversation-card{height:calc(100dvh - 108px)}
+  .days-grid{grid-template-columns:1fr}
+}
+
+@media(min-width:851px){
+  .conversation-card{position:sticky;top:24px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .stat,.card,.panel-section,.day-card,.nav button,.primary-button,.secondary-button{transition:none!important}
+}
 
 </style>
 </head>
@@ -2889,7 +3118,7 @@ function beginSession(){
     clearSessionTimers();
     if(currentTopic==="Random") currentTopic=getRandomTopic();
     selectedPracticeDay=selectedPracticeDay||state.currentDay;
-    sessionRunning=true; recording=false; secondsLeft=3600; userTurns=0; totalWords=0; totalScore=0; conversationIndex=0; currentSpeech=""; currentTarget=""; currentSpokenText=""; conversationPool=getConversationPool(currentTopic); usedAISentences=new Set(); usedTargetSentences=new Set();
+    sessionRunning=true; recording=false; secondsLeft=3600; userTurns=0; totalWords=0; totalScore=0; conversationIndex=0; currentSpeech=""; currentTarget=""; currentSpokenText="";
     speechSynthesisSafeCancel();
     const body=document.getElementById("conversationBody");
     body.innerHTML="";
@@ -2913,128 +3142,26 @@ function speechSynthesisSafeCancel(){try{if("speechSynthesis" in window)speechSy
    START CONVERSATION
 ========================================================= */
 
-function getConversationPool(topic){
-    const base=scripts[topic]||scripts["Daily Life"]||[];
-    const topicQuestions={
-        "Daily Life":[
-            "What was the best part of your morning today?","What usually gives you energy during the day?","What is one small habit you want to improve?","How do you normally organize a busy day?","What do you enjoy doing when you finally get some free time?","What is something you would like to do more often?","How has your routine changed recently?","What part of your day feels the most relaxing?","What is one thing that makes an ordinary day better?","If you could change one part of your routine, what would it be?"
-        ],
-        "Work & Career":[
-            "What part of your work requires the most concentration?","How do you prepare before starting an important task?","Tell me about a work problem you solved recently.","What kind of projects do you enjoy the most?","How do you learn a new tool at work?","What makes teamwork successful for you?","How do you react when a deadline becomes difficult?","What professional skill would you like to strengthen next?","What kind of workplace helps you perform your best?","What achievement at work are you proud of?"
-        ],
-        "Travel":[
-            "What would your ideal weekend trip look like?","How do you choose a place to visit?","Tell me about a place you would happily visit twice.","What do you enjoy most about arriving in a new city?","How do you usually plan your travel budget?","What local experience would you never want to miss?","Would you rather travel slowly or visit many places quickly?","What makes accommodation comfortable for you?","How do you handle an unexpected problem while traveling?","What destination would you recommend to a friend?"
-        ],
-        "Food":[
-            "What meal could you eat regularly without getting bored?","What food reminds you of home?","How would you describe your favorite dish to a visitor?","What do you usually order when trying a new restaurant?","What is one cooking skill you want to learn?","How do you decide what to eat on a busy day?","What makes a meal memorable for you?","Do you prefer experimenting with food or choosing familiar dishes?","What is a simple meal you make well?","What food would you introduce to someone visiting your city?"
-        ],
-        "Friends":[
-            "What do you value most in a friendship?","How do you usually stay in touch with close friends?","What is your idea of a great day with friends?","How do friends influence your decisions?","What makes a conversation with a friend enjoyable?","How do you support a friend who is having a difficult day?","What activity would you like to try with your friends?","Do you prefer a small group or a large group of friends?","What is a funny memory you still remember clearly?","What makes someone easy to trust?"
-        ],
-        "Technology":[
-            "Which piece of technology saves you the most time?","How has technology changed the way you learn?","What app or tool do you use almost every day?","What technology do you think will change work in the future?","How do you decide whether a new tool is worth learning?","What is one technology problem that annoys you?","Do you prefer simple tools or feature-rich tools?","How do you protect your important digital information?","What technology would make your daily life easier?","What skill should everyone learn in the digital age?"
-        ],
-        "Interview":[
-            "How would you describe yourself to a new colleague?","What type of work environment helps you grow?","Tell me about a time you learned from a mistake.","How do you prioritize several tasks at once?","What motivates you when work becomes difficult?","How do you explain a technical idea to a non-technical person?","What kind of responsibility would you like to take next?","How do you respond to constructive feedback?","What makes you a dependable team member?","What would success look like for you one year from now?"
-        ]
-    };
-    const questions=topicQuestions[topic]||topicQuestions["Daily Life"];
-    const pool=[];
-    base.forEach(x=>pool.push({q:x[0],a:x[1]}));
-    questions.forEach(q=>pool.push({q,a:createModelAnswer(topic,q)}));
-    // Create additional natural follow-up prompts from reusable but non-identical forms.
-    const followups=[
-        "Why does that matter to you?","What makes you feel that way?","Can you give me a real example?","Has your opinion changed over time?","What would you recommend to someone in the same situation?","What would you do differently next time?","How did you first become interested in that?","What is the biggest challenge there?","What is one advantage and one disadvantage?","What would your ideal version of that look like?"
-    ];
-    followups.forEach((q,i)=>pool.push({q:q+" Tell me a little more about it.",a:createModelAnswer(topic,q)}));
-    return pool;
-}
-
-function createModelAnswer(topic,q){
-    // Build the practice sentence from the question so every prompt has a
-    // different model answer instead of recycling one sentence.
-    const clean=q.replace(/[?!.]+$/g,"").trim();
-    const lower=clean.charAt(0).toLowerCase()+clean.slice(1);
-    const endings=[
-        "because it is important to me.",
-        "because it affects my everyday experience.",
-        "because I have learned something useful from it.",
-        "because it helps me make better decisions.",
-        "because I want to become more confident in that area.",
-        "because it gives me a practical way to improve.",
-        "because my experience has taught me to think about it carefully.",
-        "because I can connect it to something I have experienced.",
-        "because it is one area where I want to keep learning.",
-        "because I believe a simple approach usually works best.",
-        "because it can make a real difference in my life.",
-        "because I enjoy thinking about practical solutions.",
-        "because I have seen both good and difficult sides of it.",
-        "because I would like to handle it more naturally.",
-        "because it is a useful lesson for the future.",
-        "because I think communication makes a big difference.",
-        "because I prefer to learn through real examples.",
-        "because it gives me an opportunity to grow.",
-        "because I want to make steady progress rather than rush.",
-        "because I can explain it better when I use a real situation."
-    ];
-    let hash=0;
-    for(let i=0;i<clean.length;i++) hash=(hash+clean.charCodeAt(i)*(i+1))%endings.length;
-    return `I would say that ${lower} is something I can relate to, ${endings[hash]}`;
-}
-
-let conversationPool=[];
-let usedAISentences=new Set();
-let usedTargetSentences=new Set();
-
-function getNextConversation(){
-    if(!conversationPool.length) conversationPool=getConversationPool(currentTopic);
-    // Never reuse an AI sentence or model answer during this session.
-    for(let i=0;i<conversationPool.length;i++){
-        const item=conversationPool[conversationIndex%conversationPool.length];
-        conversationIndex++;
-        if(!usedAISentences.has(item.q)&&!usedTargetSentences.has(item.a)){
-            usedAISentences.add(item.q);
-            usedTargetSentences.add(item.a);
-            return item;
-        }
-    }
-    // If the pool is exhausted, generate a fresh contextual question instead of repeating.
-    const n=usedAISentences.size+1;
-    const qVariants=[
-        "one personal example you have not mentioned yet",
-        "one small detail that people often overlook",
-        "one lesson you have learned from experience",
-        "one change you would make if you had the opportunity",
-        "one thing you would recommend to a beginner",
-        "one surprising thing you have noticed",
-        "one goal you would like to achieve",
-        "one challenge you would like to handle better",
-        "one memory that explains your opinion",
-        "one reason this matters to you"
-    ];
-    const aVariants=[
-        "I can explain it with a simple example.",
-        "I can describe it from my own experience.",
-        "I can give a practical reason for that.",
-        "I can explain what I would do in that situation.",
-        "I can share what I learned from it.",
-        "I can describe how I would approach it.",
-        "I can give an example from everyday life.",
-        "I can explain why that is important to me.",
-        "I can compare it with another experience.",
-        "I can describe what I would improve next time."
-    ];
-    const q=`Let's explore this from another angle. What is ${qVariants[n%qVariants.length]} about ${currentTopic.toLowerCase()}?`;
-    const a=`My answer is that ${currentTopic.toLowerCase()} is important to me for a practical reason. ${aVariants[n%aVariants.length]}`;
-    const item={q,a};
-    usedAISentences.add(item.q); usedTargetSentences.add(item.a);
-    return item;
-}
-
 function startConversation(){
-    if(!sessionRunning)return;
-    const item=getNextConversation();
-    speakAI(item.q,()=>showTarget(item.a));
+
+    if(!sessionRunning)
+        return;
+
+    const data=
+        scripts[currentTopic] ||
+        scripts["Daily Life"];
+
+    conversationIndex=0;
+
+    const item=data[conversationIndex];
+
+    speakAI(
+        item[0],
+        ()=>{
+            showTarget(item[1]);
+        }
+    );
+
 }
 
 
@@ -3356,31 +3483,116 @@ function toggleMic(){
 ========================================================= */
 
 function processAnswer(text){
-    if(!sessionRunning)return;
-    document.getElementById("userTurn").classList.remove("visible");
+
+    if(!sessionRunning)
+        return;
+
+    document
+        .getElementById("userTurn")
+        .classList.remove("visible");
+
     addUserTurn(text);
+
     userTurns++;
-    totalWords+=text.split(/\s+/).filter(Boolean).length;
-    totalScore+=evaluateSpeech(text);
+
+    totalWords+=
+        text
+        .split(/\s+/)
+        .filter(Boolean)
+        .length;
+
+    const score=
+        evaluateSpeech(text);
+
+    totalScore+=score;
+
     updateTurnCounter();
 
-    // Make the next exchange react naturally to what the learner just said.
-    const item=getNextConversation();
-    let aiText=item.q;
-    const lower=text.toLowerCase().trim();
-    if(lower){
-        if(/^(yes|yeah|yep|sure|definitely)\b/.test(lower)) aiText="That's good to hear. "+aiText;
-        else if(/^(no|not really|never)\b/.test(lower)) aiText="I understand. "+aiText;
-        else if(text.split(/\s+/).length>=12) aiText="That's interesting. Thanks for explaining that. "+aiText;
-        else if(text.split(/\s+/).length<=3) aiText="I see. Let me ask you something a little deeper. "+aiText;
+
+    /* NEXT CONVERSATION */
+
+    const data=
+        scripts[currentTopic] ||
+        scripts["Daily Life"];
+
+
+    conversationIndex++;
+
+    if(
+        conversationIndex>=data.length
+    ){
+
+        conversationIndex=0;
+
     }
-    // Acknowledge the learner without repeating the exact previous AI sentence.
-    usedAISentences.add(aiText);
-    document.getElementById("status").textContent="🤖 AI is thinking...";
-    sessionTimeouts.push(setTimeout(()=>{
-        if(!sessionRunning)return;
-        speakAI(aiText,()=>showTarget(item.a));
-    },650));
+
+
+    const next=
+        data[conversationIndex];
+
+
+    document
+        .getElementById("status")
+        .textContent=
+        "🤖 AI is thinking...";
+
+
+    setTimeout(()=>{
+
+        if(!sessionRunning)
+            return;
+
+        let aiText=
+            next[0];
+
+        /*
+          Simple natural acknowledgements.
+          This makes the local version feel
+          less repetitive.
+        */
+
+        const lower=
+            text.toLowerCase();
+
+
+        if(
+            lower.includes("yes")
+        ){
+
+            aiText=
+                "That's nice to hear. "+
+                aiText;
+
+        }
+        else if(
+            lower.includes("no")
+        ){
+
+            aiText=
+                "I understand. "+
+                aiText;
+
+        }
+        else if(
+            text.length>70
+        ){
+
+            aiText=
+                "That's interesting. "+
+                aiText;
+
+        }
+
+
+        speakAI(
+            aiText,
+            ()=>{
+                showTarget(next[1]);
+            }
+        );
+
+    },600);
+
 }
 
 
@@ -3537,8 +3749,7 @@ function finishSession(){
     }
     const practicingDay=selectedPracticeDay||state.currentDay;
     if(!state.completedDays.includes(practicingDay))state.completedDays.push(practicingDay);
-    // Days are independently accessible; completing a day no longer forces Day 2, Day 3, etc.
-    // Keep currentDay as the user's chosen/default day for dashboard purposes.
+    if(practicingDay===state.currentDay&&state.currentDay<30)state.currentDay++;
     saveState(); generateReport(); openPage("report",document.querySelectorAll(".nav button")[2]);
     toast(userTurns?`Session complete — score ${average}%.`:"Session ended. Try a few spoken turns next time.",userTurns?"success":"error");
 }
@@ -3573,9 +3784,11 @@ function renderDays(){
                 state.completedDays
                     .includes(day);
 
-            // All 30 days are available immediately. Completion never locks a day.
-            const unlocked=true;
-            const current=day===selectedPracticeDay;
+            const unlocked = true;
+
+
+            const current=
+                day===state.currentDay;
 
 
             const card=
@@ -3597,8 +3810,16 @@ function renderDays(){
             card.className=classes;
 
 
-            let status=completed ? "✓ Completed • Practice again" : "Available • Start anytime";
-            if(current) status=completed ? "✓ Completed • Practicing now" : "● Ready to practice";
+            let status="🔒 Locked";
+
+            if(completed)
+                status="✓ Completed • Practice again";
+
+            else if(current)
+                status="● Current Day";
+
+            else if(unlocked)
+                status="Available";
 
 
             card.innerHTML=`
