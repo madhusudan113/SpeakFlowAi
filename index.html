@@ -1,0 +1,3995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>SpeakFlow AI — English Fluency Coach</title>
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#f6f7fb;
+    --surface:#ffffff;
+    --surface2:#f9f9fc;
+    --text:#15151c;
+    --muted:#777987;
+    --border:#e8e8ef;
+
+    --primary:#6847f5;
+    --primary2:#8a6fff;
+    --primary-soft:#f0edff;
+
+    --green:#17a558;
+    --red:#ef4444;
+    --orange:#f59e0b;
+
+    --dark:#111019;
+
+    --shadow:
+        0 15px 45px rgba(34,25,78,.08);
+
+    --radius:20px;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+button:disabled{
+    cursor:not-allowed;
+}
+
+.app{
+    min-height:100vh;
+    display:flex;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+
+    width:250px;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #28203d 0,
+            #111019 45%
+        );
+
+    color:white;
+
+    padding:25px 18px;
+
+    z-index:100;
+
+    display:flex;
+    flex-direction:column;
+
+    transition:.3s ease;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:900;
+
+    letter-spacing:-.7px;
+
+    margin:4px 8px 38px;
+}
+
+.logo span{
+    color:#9077ff;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.nav button{
+    width:100%;
+
+    border:0;
+    background:transparent;
+
+    color:#aaa8b8;
+
+    text-align:left;
+
+    padding:13px 15px;
+
+    border-radius:12px;
+
+    font-size:14px;
+
+    transition:.2s;
+}
+
+.nav button:hover{
+    color:white;
+    background:#25212f;
+}
+
+.nav button.active{
+    background:
+        linear-gradient(
+            90deg,
+            rgba(104,71,245,.35),
+            rgba(104,71,245,.12)
+        );
+
+    color:white;
+
+    box-shadow:
+        inset 3px 0 0 var(--primary);
+}
+
+.sidebar-bottom{
+    margin-top:auto;
+}
+
+.journey-card{
+    background:#211d2c;
+
+    border:1px solid #322d40;
+
+    border-radius:16px;
+
+    padding:15px;
+}
+
+.journey-top{
+    display:flex;
+    justify-content:space-between;
+
+    color:#ddd;
+
+    font-size:12px;
+
+    margin-bottom:10px;
+}
+
+.progress-track{
+    width:100%;
+    height:7px;
+
+    background:#3a3547;
+
+    border-radius:20px;
+
+    overflow:hidden;
+}
+
+.progress-track div{
+    width:0;
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--primary2)
+        );
+
+    border-radius:20px;
+
+    transition:.4s;
+}
+
+.journey-bottom{
+    margin-top:9px;
+
+    font-size:11px;
+
+    color:#999;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main{
+    width:calc(100% - 250px);
+
+    margin-left:250px;
+
+    padding:30px;
+
+    max-width:1700px;
+}
+
+.mobile-header{
+    display:none;
+}
+
+
+/* =========================================================
+   PAGES
+========================================================= */
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* Sticky, full-height practice workspace */
+.page#practice.active{
+    height:calc(100vh - 60px);
+    min-height:620px;
+    overflow:hidden;
+}
+.page#practice .page-header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(247,247,250,.96);
+    backdrop-filter:blur(12px);
+    padding:8px 0 14px;
+    margin-bottom:12px;
+}
+.page#practice .practice-layout{
+    height:calc(100% - 78px);
+    min-height:0;
+}
+.page#practice .conversation-card{
+    height:100%;
+    min-height:0;
+}
+.page#practice .conversation-body{
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scroll-behavior:smooth;
+    overscroll-behavior:contain;
+}
+.page#practice .controls{
+    flex:0 0 auto;
+    position:sticky;
+    bottom:0;
+    z-index:10;
+    background:rgba(255,255,255,.98);
+}
+@media(max-width:1050px){
+    .page#practice.active{height:auto;min-height:calc(100vh - 36px);overflow:visible;}
+    .page#practice .page-header{position:sticky;top:0;}
+    .page#practice .practice-layout{height:calc(100vh - 150px);min-height:520px;}
+}
+@media(max-width:850px){
+    .page#practice.active{height:calc(100vh - 36px);overflow:hidden;}
+    .page#practice .page-header{padding-top:0;}
+    .page#practice .practice-layout{height:calc(100% - 92px);min-height:0;}
+    .page#practice .conversation-body{padding:18px;}
+}
+
+
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
+}
+
+.page-title h1{
+    font-size:29px;
+
+    letter-spacing:-.7px;
+}
+
+.page-title p{
+    color:var(--muted);
+
+    margin-top:5px;
+
+    font-size:14px;
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.hero{
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:300px;
+
+    padding:40px;
+
+    border-radius:28px;
+
+    color:white;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(255,255,255,.2),
+            transparent 28%
+        ),
+        linear-gradient(
+            135deg,
+            #6040e5,
+            #8b70ff
+        );
+
+    box-shadow:
+        0 25px 60px rgba(104,71,245,.22);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:22px;
+}
+
+.hero-content{
+    max-width:700px;
+}
+
+.hero-badge{
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    background:rgba(255,255,255,.14);
+
+    border:1px solid rgba(255,255,255,.18);
+
+    padding:7px 11px;
+
+    border-radius:30px;
+
+    font-size:11px;
+
+    margin-bottom:15px;
+}
+
+.hero h2{
+    font-size:38px;
+
+    line-height:1.1;
+
+    letter-spacing:-1.2px;
+
+    margin-bottom:14px;
+}
+
+.hero p{
+    max-width:680px;
+
+    line-height:1.7;
+
+    opacity:.9;
+
+    font-size:15px;
+}
+
+.hero-buttons{
+    display:flex;
+
+    gap:10px;
+
+    margin-top:25px;
+
+    flex-wrap:wrap;
+}
+
+.primary-button{
+    border:0;
+
+    background:white;
+
+    color:#5739d8;
+
+    padding:13px 19px;
+
+    border-radius:12px;
+
+    font-weight:800;
+}
+
+.secondary-button{
+    border:1px solid rgba(255,255,255,.3);
+
+    background:rgba(255,255,255,.12);
+
+    color:white;
+
+    padding:13px 19px;
+
+    border-radius:12px;
+}
+
+.hero-robot{
+    font-size:105px;
+
+    filter:
+        drop-shadow(
+            0 20px 30px rgba(0,0,0,.18)
+        );
+
+    animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-9px);
+    }
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:16px;
+
+    margin-bottom:25px;
+}
+
+.stat{
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:21px;
+
+    box-shadow:var(--shadow);
+}
+
+.stat-top{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+}
+
+.stat-icon{
+    width:38px;
+    height:38px;
+
+    border-radius:11px;
+
+    background:var(--primary-soft);
+
+    display:grid;
+    place-items:center;
+}
+
+.stat small{
+    display:block;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    margin-top:14px;
+}
+
+.stat strong{
+    display:block;
+
+    font-size:27px;
+
+    margin-top:5px;
+
+    letter-spacing:-.5px;
+}
+
+
+/* =========================================================
+   HOME LOWER CARDS
+========================================================= */
+
+.home-grid{
+    display:grid;
+
+    grid-template-columns:
+        1.5fr 1fr;
+
+    gap:18px;
+}
+
+.card{
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+    padding:22px;
+}
+
+.card-title{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
+}
+
+.card-title h3{
+    font-size:17px;
+}
+
+.card-title span{
+    color:var(--muted);
+
+    font-size:12px;
+}
+
+.goal{
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px;
+
+    background:#fafaff;
+
+    border:1px solid #efedf8;
+
+    border-radius:14px;
+
+    margin-bottom:10px;
+}
+
+.goal-icon{
+    width:40px;
+    height:40px;
+
+    border-radius:11px;
+
+    background:var(--primary-soft);
+
+    display:grid;
+
+    place-items:center;
+}
+
+.goal strong{
+    font-size:14px;
+}
+
+.goal p{
+    color:var(--muted);
+
+    font-size:12px;
+
+    margin-top:3px;
+}
+
+
+/* =========================================================
+   PRACTICE
+========================================================= */
+
+.practice-layout{
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1fr)
+        310px;
+
+    gap:20px;
+}
+
+.conversation-card{
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:23px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+    min-height:740px;
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.conversation-header{
+    padding:17px 21px;
+
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+}
+
+.teacher{
+    display:flex;
+
+    align-items:center;
+
+    gap:11px;
+}
+
+.teacher-avatar{
+    width:45px;
+    height:45px;
+
+    border-radius:50%;
+
+    background:var(--primary-soft);
+
+    display:grid;
+
+    place-items:center;
+
+    font-size:22px;
+}
+
+.teacher-name{
+    font-weight:800;
+
+    font-size:14px;
+}
+
+.online{
+    color:var(--green);
+
+    font-size:11px;
+
+    margin-top:3px;
+}
+
+.timer{
+    background:#111019;
+
+    color:white;
+
+    border-radius:11px;
+
+    padding:10px 14px;
+
+    font-weight:900;
+
+    font-variant-numeric:tabular-nums;
+
+    min-width:75px;
+
+    text-align:center;
+}
+
+.timer.warning{
+    background:#b45309;
+}
+
+.timer.danger{
+    background:#dc2626;
+}
+
+.conversation-body{
+    flex:1;
+
+    overflow:auto;
+
+    padding:27px;
+}
+
+.empty-state{
+    min-height:480px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#999;
+
+    text-align:center;
+}
+
+.empty-state-icon{
+    font-size:58px;
+
+    margin-bottom:12px;
+}
+
+
+/* MESSAGE */
+
+.message{
+    max-width:78%;
+
+    margin-bottom:21px;
+
+    animation:messageIn .25s ease;
+}
+
+@keyframes messageIn{
+
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.message.ai{
+    margin-right:auto;
+}
+
+.message.user{
+    margin-left:auto;
+}
+
+.message-label{
+    font-size:10px;
+
+    font-weight:900;
+
+    text-transform:uppercase;
+
+    color:#888b98;
+
+    margin-bottom:6px;
+
+    letter-spacing:.6px;
+}
+
+.message.user .message-label{
+    text-align:right;
+}
+
+.message-bubble{
+    padding:16px 18px;
+
+    line-height:1.65;
+
+    border-radius:18px;
+
+    font-size:15px;
+}
+
+.message.ai .message-bubble{
+    background:#f0edff;
+
+    border-bottom-left-radius:5px;
+}
+
+.message.user .message-bubble{
+    background:var(--primary);
+
+    color:white;
+
+    border-bottom-right-radius:5px;
+}
+
+.replay{
+    margin-top:8px;
+
+    border:1px solid var(--border);
+
+    background:white;
+
+    padding:7px 10px;
+
+    border-radius:9px;
+
+    font-size:11px;
+}
+
+
+/* USER SENTENCE */
+
+.user-turn{
+    display:none;
+
+    margin:0 25px 18px;
+
+    padding:19px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #faf9ff,
+            #f3efff
+        );
+
+    border:2px solid #dcd5ff;
+
+    border-radius:18px;
+}
+
+.user-turn.visible{
+    display:block;
+
+    animation:userTurn .3s ease;
+}
+
+@keyframes userTurn{
+
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.turn-badge{
+    color:var(--primary);
+
+    font-size:10px;
+
+    font-weight:900;
+
+    letter-spacing:.8px;
+
+    margin-bottom:8px;
+}
+
+.target-sentence{
+    font-size:21px;
+
+    font-weight:700;
+
+    line-height:1.5;
+}
+
+.target-note{
+    color:var(--muted);
+
+    font-size:11px;
+
+    margin-top:8px;
+}
+
+
+/* CONTROLS */
+
+.controls{
+    border-top:1px solid var(--border);
+
+    padding:17px 24px;
+}
+
+.status{
+    text-align:center;
+
+    min-height:20px;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    margin-bottom:12px;
+}
+
+.control-row{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+}
+
+.mic-button{
+    width:72px;
+    height:72px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #6847f5,
+            #8469ff
+        );
+
+    color:white;
+
+    font-size:27px;
+
+    box-shadow:
+        0 12px 28px
+        rgba(104,71,245,.3);
+
+    transition:.2s;
+}
+
+.mic-button:hover{
+    transform:translateY(-2px);
+}
+
+.mic-button.recording{
+    background:var(--red);
+
+    animation:micPulse 1s infinite;
+}
+
+@keyframes micPulse{
+
+    50%{
+        box-shadow:
+            0 0 0 12px
+            rgba(239,68,68,.12);
+    }
+}
+
+.control-small{
+    border:0;
+
+    padding:11px 14px;
+
+    border-radius:10px;
+
+    background:#f1f1f5;
+
+    color:#555;
+
+    font-size:12px;
+}
+
+.end-button{
+    background:#171923;
+
+    color:white;
+}
+
+
+/* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+.right-panel{
+    height:max-content;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+    padding:20px;
+}
+
+.panel-section{
+    margin-bottom:25px;
+}
+
+.panel-section:last-child{
+    margin-bottom:0;
+}
+
+.panel-section h3{
+    font-size:15px;
+
+    margin-bottom:12px;
+}
+
+.topic-list{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+}
+
+.topic{
+    padding:11px;
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:12px;
+
+    transition:.2s;
+}
+
+.topic:hover{
+    background:#faf9ff;
+
+    border-color:#d2c9ff;
+}
+
+.topic.selected{
+    background:var(--primary-soft);
+
+    border-color:#c8bdff;
+
+    color:var(--primary-dark);
+
+    font-weight:700;
+}
+
+.session-info{
+    background:#fafaff;
+
+    border:1px solid #efedf8;
+
+    border-radius:12px;
+
+    padding:14px;
+}
+
+.session-info-row{
+    display:flex;
+
+    justify-content:space-between;
+
+    font-size:12px;
+
+    margin-bottom:9px;
+}
+
+.session-info-row:last-child{
+    margin-bottom:0;
+}
+
+.session-info-row span{
+    color:var(--muted);
+}
+
+.tip-box{
+    background:#fffaf0;
+
+    border:1px solid #f6e6bf;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    color:#77643e;
+
+    line-height:1.6;
+
+    font-size:12px;
+}
+
+
+/* =========================================================
+   REPORT
+========================================================= */
+
+.report{
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:23px;
+
+    box-shadow:var(--shadow);
+
+    padding:30px;
+}
+
+.report-top{
+    text-align:center;
+
+    padding-bottom:30px;
+
+    border-bottom:1px solid var(--border);
+}
+
+.score-circle{
+    width:150px;
+    height:150px;
+
+    border-radius:50%;
+
+    border:10px solid #e9e3ff;
+
+    display:grid;
+
+    place-items:center;
+
+    margin:0 auto 17px;
+
+    color:var(--primary);
+
+    font-size:38px;
+
+    font-weight:900;
+}
+
+.report-top h2{
+    font-size:24px;
+}
+
+.report-top p{
+    color:var(--muted);
+
+    margin-top:5px;
+
+    font-size:13px;
+}
+
+.score-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:15px;
+
+    margin-top:25px;
+}
+
+.score-box{
+    background:#fafafa;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:18px;
+}
+
+.score-box small{
+    color:var(--muted);
+}
+
+.score-box strong{
+    display:block;
+
+    margin-top:6px;
+
+    font-size:25px;
+}
+
+.feedback{
+    margin-top:22px;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    background:#f8f7ff;
+
+    line-height:1.7;
+
+    color:#555;
+}
+
+
+/* =========================================================
+   30 DAY PLAN
+========================================================= */
+
+.plan-banner{
+    background:
+        linear-gradient(
+            135deg,
+            #171923,
+            #282333
+        );
+
+    color:white;
+
+    border-radius:22px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+}
+
+.plan-banner h2{
+    margin-bottom:6px;
+}
+
+.plan-banner p{
+    color:#bdbbc7;
+
+    font-size:13px;
+
+    line-height:1.6;
+}
+
+.days-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    gap:14px;
+}
+
+.day-card{
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:17px;
+
+    min-height:130px;
+
+    transition:.2s;
+
+    position:relative;
+}
+
+.day-card.available{
+    cursor:pointer;
+}
+
+.day-card.available:hover{
+    transform:translateY(-3px);
+
+    box-shadow:var(--shadow);
+}
+
+.day-card.current{
+    border:2px solid var(--primary);
+}
+
+.day-card.completed{
+    background:#f1fff6;
+
+    border-color:#a9e4bf;
+}
+
+.day-card.locked{
+    opacity:.5;
+}
+
+.day-number{
+    font-size:10px;
+
+    color:var(--muted);
+
+    font-weight:800;
+
+    letter-spacing:.6px;
+}
+
+.day-card h3{
+    margin:7px 0;
+
+    font-size:14px;
+}
+
+.day-status{
+    color:var(--muted);
+
+    font-size:11px;
+}
+
+.day-card.completed .day-status{
+    color:var(--green);
+
+    font-weight:700;
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.settings-card{
+    max-width:700px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:var(--shadow);
+}
+
+.field{
+    margin-bottom:20px;
+}
+
+.field label{
+    display:block;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    margin-bottom:7px;
+}
+
+.field input,
+.field select{
+    width:100%;
+
+    padding:12px;
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    outline:none;
+
+    background:white;
+}
+
+.save-button{
+    background:var(--primary);
+
+    color:white;
+
+    border:0;
+
+    padding:12px 18px;
+
+    border-radius:10px;
+
+    font-weight:700;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1050px){
+
+    .practice-layout{
+        grid-template-columns:1fr;
+    }
+
+    .right-panel{
+        display:none;
+    }
+
+    .home-grid{
+        grid-template-columns:1fr;
+    }
+
+    .days-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+}
+
+
+@media(max-width:850px){
+
+    .sidebar{
+        transform:translateX(-100%);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        width:100%;
+
+        margin-left:0;
+
+        padding:18px;
+    }
+
+    .mobile-header{
+        display:flex;
+
+        justify-content:space-between;
+
+        align-items:center;
+
+        margin-bottom:20px;
+    }
+
+    .menu{
+        border:0;
+
+        background:#111019;
+
+        color:white;
+
+        padding:10px 13px;
+
+        border-radius:9px;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .days-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+
+@media(max-width:600px){
+
+    .hero{
+        padding:26px;
+
+        min-height:auto;
+    }
+
+    .hero h2{
+        font-size:27px;
+    }
+
+    .hero-robot{
+        display:none;
+    }
+
+    .stats{
+        gap:10px;
+    }
+
+    .stat{
+        padding:15px;
+    }
+
+    .stat strong{
+        font-size:22px;
+    }
+
+    .page-title h1{
+        font-size:23px;
+    }
+
+    .page-header{
+        align-items:flex-start;
+    }
+
+    .conversation-card{
+        min-height:690px;
+    }
+
+    .conversation-body{
+        padding:18px;
+    }
+
+    .user-turn{
+        margin:0 18px 17px;
+    }
+
+    .target-sentence{
+        font-size:18px;
+    }
+
+    .message{
+        max-width:90%;
+    }
+
+    .score-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .days-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+
+/* Robustness + accessibility upgrades */
+:root{--primary-dark:#4f36c8;--focus:rgba(104,71,245,.28)}
+*{scrollbar-width:thin}
+button:focus-visible,input:focus-visible,select:focus-visible,.topic:focus-visible,.day-card:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+button{border:0}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:90}
+.overlay.show{display:block}
+.toast{position:fixed;right:20px;bottom:20px;z-index:9999;background:#171923;color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 15px 35px rgba(0,0,0,.2);font-size:13px;max-width:min(360px,calc(100vw - 40px))}
+.toast.error{background:#991b1b}.toast.success{background:#166534}
+.feature-note{margin-top:10px;font-size:11px;color:var(--muted)}
+@media(max-width:850px){.overlay.show{display:block}.sidebar{box-shadow:20px 0 40px rgba(0,0,0,.2)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="app">
+<div class="overlay" id="overlay" onclick="toggleMenu(false)" aria-hidden="true"></div>
+
+
+<!-- ======================================================
+     SIDEBAR
+====================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        Speak<span>Flow</span> AI
+    </div>
+
+    <nav class="nav">
+
+        <button class="active"
+                onclick="openPage('home',this)">
+            🏠 &nbsp; Home
+        </button>
+
+        <button onclick="openPage('practice',this)">
+            🗣️ &nbsp; Conversation
+        </button>
+
+        <button onclick="openPage('report',this)">
+            📊 &nbsp; My Progress
+        </button>
+
+        <button onclick="openPage('plan',this)">
+            📅 &nbsp; 30-Day Plan
+        </button>
+
+        <button onclick="openPage('settings',this)">
+            ⚙️ &nbsp; Settings
+        </button>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <div class="journey-card">
+
+            <div class="journey-top">
+
+                <span>30-Day Journey</span>
+
+                <span id="sidePercent">
+                    3%
+                </span>
+
+            </div>
+
+            <div class="progress-track">
+                <div id="sideBar"></div>
+            </div>
+
+            <div class="journey-bottom">
+
+                Current:
+                Day <span id="sideDay">1</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ======================================================
+     MAIN
+====================================================== -->
+
+<main class="main">
+
+
+<div class="mobile-header">
+
+    <strong>SpeakFlow AI</strong>
+
+    <button class="menu"
+            onclick="toggleMenu()">
+        ☰
+    </button>
+
+</div>
+
+
+<!-- ======================================================
+     HOME
+====================================================== -->
+
+<section class="page active"
+         id="home">
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                English Fluency Coach
+            </h1>
+
+            <p>
+                Talk with AI for one hour every day. Runs as a single offline-friendly HTML file.
+            </p>
+
+        </div>
+
+        <strong id="homeDay">
+            Day 1 / 30
+        </strong>
+
+    </div>
+
+
+    <div class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                ✨ Beginner Friendly
+            </div>
+
+            <h2>
+                Speak English.<br>
+                Don't Translate.
+            </h2>
+
+            <p>
+                Your AI partner speaks first.
+                After every AI sentence, you get
+                a simple sentence to speak.
+                Listen, read, speak and continue
+                for a full 60-minute conversation.
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <button class="primary-button"
+                        onclick="beginSession()">
+                    🎙 Start 60-Minute Conversation
+                </button>
+
+                <button class="secondary-button"
+                        onclick="openPage('plan',
+                        document.querySelectorAll('.nav button')[3])">
+                    View 30-Day Plan
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-robot">
+            🤖
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <span>📅</span>
+
+                <div class="stat-icon">
+                    📅
+                </div>
+
+            </div>
+
+            <small>
+                Current Day
+            </small>
+
+            <strong id="homeDayStat">
+                1 / 30
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+                <span></span>
+
+                <div class="stat-icon">
+                    🗣️
+                </div>
+            </div>
+
+            <small>
+                Sessions Completed
+            </small>
+
+            <strong id="sessionsStat">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+                <span></span>
+
+                <div class="stat-icon">
+                    ⭐
+                </div>
+            </div>
+
+            <small>
+                Speaking Score
+            </small>
+
+            <strong id="scoreStat">
+                0%
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+                <span></span>
+
+                <div class="stat-icon">
+                    🔥
+                </div>
+
+            </div>
+
+            <small>
+                Day Streak
+            </small>
+
+            <strong id="streakStat">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="home-grid">
+
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Today's Learning
+                </h3>
+
+                <span>
+                    60 minutes
+                </span>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-icon">
+                    🎧
+                </div>
+
+                <div>
+                    <strong>
+                        Listen
+                    </strong>
+
+                    <p>
+                        Listen carefully to the AI.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-icon">
+                    📖
+                </div>
+
+                <div>
+                    <strong>
+                        Read
+                    </strong>
+
+                    <p>
+                        Read the sentence shown for you.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-icon">
+                    🎙️
+                </div>
+
+                <div>
+                    <strong>
+                        Speak
+                    </strong>
+
+                    <p>
+                        Say the sentence naturally.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-icon">
+                    🔄
+                </div>
+
+                <div>
+                    <strong>
+                        Repeat
+                    </strong>
+
+                    <p>
+                        Continue until the session ends.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <h3>
+                    Your Learning Rule
+                </h3>
+
+            </div>
+
+            <p style="
+                color:#666;
+                line-height:1.8;
+                font-size:14px;
+            ">
+
+                You don't need to create sentences
+                from nothing.
+
+                <br><br>
+
+                The AI gives you a sentence.
+
+                <br><br>
+
+                <strong>
+                    Read → Speak → Repeat
+                </strong>
+
+                <br><br>
+
+                Over time, the sentences become
+                longer and more natural.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     PRACTICE
+====================================================== -->
+
+<section class="page"
+         id="practice">
+
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                Live Conversation
+            </h1>
+
+            <p id="topicHeader">
+                Choose a topic and start talking.
+            </p>
+
+        </div>
+
+
+        <div class="timer"
+             id="timer">
+            60:00
+        </div>
+
+    </div>
+
+
+    <div class="practice-layout">
+
+
+        <div class="conversation-card">
+
+
+            <div class="conversation-header">
+
+                <div class="teacher">
+
+                    <div class="teacher-avatar">
+                        🤖
+                    </div>
+
+                    <div>
+
+                        <div class="teacher-name">
+                            AI English Partner
+                        </div>
+
+                        <div class="online">
+                            ● Ready to talk
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div style="
+                    font-size:11px;
+                    color:#777;
+                ">
+                    Beginner Mode
+                </div>
+
+            </div>
+
+
+            <div class="conversation-body"
+                 id="conversationBody">
+
+
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+                        🎧
+                    </div>
+
+                    <strong>
+                        Your conversation will appear here.
+                    </strong>
+
+                    <p style="
+                        margin-top:7px;
+                        font-size:12px;
+                    ">
+                        AI speaks first.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- USER SENTENCE -->
+
+            <div class="user-turn"
+                 id="userTurn">
+
+                <div class="turn-badge">
+                    YOUR TURN — SAY THIS
+                </div>
+
+                <div class="target-sentence"
+                     id="targetSentence">
+                    Your sentence will appear here.
+                </div>
+
+                <div class="target-note"
+                     id="targetNote">
+                    Read once, then speak naturally.
+                </div>
+
+            </div>
+
+
+            <!-- CONTROLS -->
+
+            <div class="controls">
+
+                <div class="status"
+                     id="status">
+                    Start a session to begin.
+                </div>
+
+
+                <div class="control-row">
+
+                    <button class="control-small"
+                            onclick="repeatAI()">
+                        🔊 Repeat
+                    </button>
+
+
+                    <button class="mic-button"
+                            id="micButton"
+                            onclick="toggleMic()">
+                        🎤
+                    </button>
+
+
+                    <button class="control-small end-button"
+                            onclick="finishSession()">
+                        End
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- RIGHT PANEL -->
+
+        <aside class="right-panel">
+
+
+            <div class="panel-section">
+
+                <h3>
+                    Conversation Topic
+                </h3>
+
+
+                <div class="topic-list">
+
+
+                    <div class="topic selected" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Daily Life')">
+                        🏠 Daily Life
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Work & Career')">
+                        💼 Work & Career
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Travel')">
+                        ✈️ Travel
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Food')">
+                        🍕 Food
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Friends')">
+                        👥 Friends
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Technology')">
+                        💻 Technology
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Interview')">
+                        👔 Interview
+                    </div>
+
+
+                    <div class="topic" role="button" tabindex="0"
+                         onclick="chooseTopic(this,'Random')">
+                        🎲 Random
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="panel-section">
+
+                <h3>
+                    Session
+                </h3>
+
+                <div class="session-info">
+
+                    <div class="session-info-row">
+                        <span>Duration</span>
+                        <strong>60 min</strong>
+                    </div>
+
+                    <div class="session-info-row">
+                        <span>Your turns</span>
+                        <strong id="turnCount">0</strong>
+                    </div>
+
+                    <div class="session-info-row">
+                        <span>Topic</span>
+                        <strong id="topicSide">
+                            Daily Life
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel-section">
+
+                <div class="tip-box">
+
+                    💡 <strong>Beginner tip</strong>
+
+                    <br><br>
+
+                    Don't worry about making mistakes.
+
+                    Your first goal is to speak.
+
+                    Accuracy will improve gradually.
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     REPORT
+====================================================== -->
+
+<section class="page"
+         id="report">
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                Your Progress
+            </h1>
+
+            <p>
+                Review your latest speaking session.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="report">
+
+        <div class="report-top">
+
+            <div class="score-circle"
+                 id="finalScore">
+                0%
+            </div>
+
+            <h2>
+                Speaking Performance
+            </h2>
+
+            <p>
+                Your score improves as you speak more.
+            </p>
+
+        </div>
+
+
+        <div class="score-grid">
+
+
+            <div class="score-box">
+
+                <small>
+                    Fluency
+                </small>
+
+                <strong id="fluency">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="score-box">
+
+                <small>
+                    Grammar
+                </small>
+
+                <strong id="grammar">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="score-box">
+
+                <small>
+                    Vocabulary
+                </small>
+
+                <strong id="vocabulary">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="score-box">
+
+                <small>
+                    Confidence
+                </small>
+
+                <strong id="confidence">
+                    0%
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="feedback"
+             id="finalFeedback">
+
+            Complete a conversation session
+            to receive feedback.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     PLAN
+====================================================== -->
+
+<section class="page"
+         id="plan">
+
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                30-Day Fluency Plan
+            </h1>
+
+            <p>
+                Complete each day and unlock the next one.
+                Completed days can always be repeated.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="plan-banner">
+
+        <h2>
+            🔓 Learn at your own pace
+        </h2>
+
+        <p>
+            Finish Day 1 to unlock Day 2.
+            Finish Day 2 to unlock Day 3.
+            You can return to any completed day
+            whenever you want.
+        </p>
+
+    </div>
+
+
+    <div class="days-grid"
+         id="daysGrid">
+    </div>
+
+
+</section>
+
+
+<!-- ======================================================
+     SETTINGS
+====================================================== -->
+
+<section class="page"
+         id="settings">
+
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>
+                Settings
+            </h1>
+
+            <p>
+                Customize your learning experience.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="settings-card">
+
+
+        <div class="field">
+
+            <label>
+                Your Name
+            </label>
+
+            <input id="name"
+                   placeholder="Enter your name">
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                English Level
+            </label>
+
+            <select id="level">
+
+                <option>
+                    Beginner
+                </option>
+
+                <option>
+                    Elementary
+                </option>
+
+                <option>
+                    Intermediate
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button class="save-button"
+                onclick="saveSettings()">
+
+            Save Settings
+
+        </button>
+
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SPEAKFLOW ENGINE
+========================================================= */
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+const STORAGE_KEY="speakflow.v2";
+const DEFAULT_STATE={currentDay:1,completedDays:[],sessions:0,streak:0,score:0,name:"",level:"Beginner",lastSessionDate:"",bestScore:0};
+
+function loadState(){
+    try{
+        const raw=window.localStorage&&localStorage.getItem(STORAGE_KEY);
+        if(!raw) return {...DEFAULT_STATE};
+        const parsed=JSON.parse(raw);
+        return {...DEFAULT_STATE,...parsed,completedDays:Array.isArray(parsed.completedDays)?parsed.completedDays:[]};
+    }catch(e){
+        console.warn("SpeakFlow storage unavailable:",e);
+        return {...DEFAULT_STATE};
+    }
+}
+let state=loadState();
+
+
+let currentTopic="Daily Life";
+
+let sessionRunning=false;
+
+let recording=false;
+
+let recognition=null;
+
+let currentSpeech="";
+
+let currentTarget="";
+
+let userTurns=0;
+
+let totalWords=0;
+
+let totalScore=0;
+
+let secondsLeft=3600;
+
+let timerInterval=null;
+
+let conversationIndex=0;
+let sessionTimeouts=[];
+let voicesReady=false;
+
+
+/* =========================================================
+   CURRICULUM
+========================================================= */
+
+const curriculum=[
+
+    "Introduce Yourself",
+    "Family & Home",
+    "Daily Routine",
+    "Hobbies",
+    "Likes & Dislikes",
+    "Food & Cooking",
+    "Shopping",
+    "Friends",
+    "Weekend Plans",
+    "Travel",
+    "Directions",
+    "Weather",
+    "Health & Fitness",
+    "Movies & Music",
+    "Education",
+    "Work",
+    "Office Conversation",
+    "Meetings",
+    "Telephone English",
+    "Professional Communication",
+    "Job Interview",
+    "Career Goals",
+    "Technology",
+    "Money & Shopping",
+    "Giving Opinions",
+    "Storytelling",
+    "Problem Solving",
+    "Debate",
+    "Free Conversation",
+    "Final Fluency Challenge"
+
+];
+
+
+/* =========================================================
+   CONVERSATION DATA
+========================================================= */
+
+const scripts={
+
+
+"Daily Life":[
+
+    ["Hi! It's nice to talk with you. How are you today?",
+     "I am doing well today. How are you?"],
+
+    ["I'm doing great, thank you. What did you do today?",
+     "Today, I worked and spent some time learning English."],
+
+    ["That sounds productive. What do you usually do in the morning?",
+     "I usually wake up, get ready, have breakfast, and start my day."],
+
+    ["What do you normally have for breakfast?",
+     "I usually have something simple like eggs, bread, or fruit."],
+
+    ["What do you like doing after work?",
+     "After work, I like to relax, watch something, or learn something new."],
+
+    ["What is something you really enjoy doing?",
+     "I really enjoy learning new things and spending time with my friends."],
+
+    ["Tell me about your typical evening.",
+     "In the evening, I have dinner, relax for a while, and prepare for the next day."],
+
+    ["What time do you normally go to bed?",
+     "I normally go to bed around eleven o'clock."],
+
+    ["Do you think your daily routine is healthy?",
+     "I think my routine is mostly healthy, but I want to exercise more."],
+
+    ["What would you like to improve in your daily life?",
+     "I would like to improve my English and become more confident."]
+
+],
+
+
+"Work & Career":[
+
+    ["Let's talk about work. What do you do?",
+     "I work in the technology field and I enjoy solving problems."],
+
+    ["What do you like most about your work?",
+     "I like learning new technologies and working on interesting projects."],
+
+    ["What skills are important for your job?",
+     "Communication, problem solving, and technical skills are very important."],
+
+    ["Do you enjoy working with other people?",
+     "Yes, I enjoy working with other people because we can share ideas."],
+
+    ["How do you handle a difficult problem at work?",
+     "I first understand the problem and then try to find a simple solution."],
+
+    ["What are your career goals?",
+     "My goal is to become a skilled professional and take more responsibility."],
+
+    ["What are you currently learning?",
+     "I am currently improving my technical skills and my English communication."],
+
+    ["What makes a good manager?",
+     "A good manager listens to people, communicates clearly, and supports the team."],
+
+    ["Would you like to work abroad someday?",
+     "Yes, I would like to work abroad and experience a different environment."],
+
+    ["What is your biggest professional goal?",
+     "My biggest goal is to build a successful career and keep learning."]
+
+],
+
+
+"Travel":[
+
+    ["Do you enjoy traveling?",
+     "Yes, I really enjoy traveling and visiting new places."],
+
+    ["Where would you like to travel?",
+     "I would like to travel to places with beautiful nature and interesting culture."],
+
+    ["Who do you usually travel with?",
+     "I usually travel with my friends or family."],
+
+    ["What do you normally do when you visit a new city?",
+     "I like exploring the city, trying local food, and visiting famous places."],
+
+    ["Do you prefer cities or quiet places?",
+     "I prefer a combination of both because each has something special."],
+
+    ["What is your dream destination?",
+     "My dream destination is a beautiful place where I can relax and explore."],
+
+    ["What is important when planning a trip?",
+     "I think budget, transportation, accommodation, and time are important."]
+
+],
+
+
+"Food":[
+
+    ["What is your favorite food?",
+     "My favorite food is something spicy and flavorful."],
+
+    ["Do you enjoy cooking?",
+     "Yes, I enjoy cooking simple meals when I have enough time."],
+
+    ["What food do you usually eat at home?",
+     "I usually eat rice, vegetables, and other homemade food."],
+
+    ["Do you prefer eating at home or at restaurants?",
+     "I usually prefer eating at home, but sometimes I enjoy going to restaurants."],
+
+    ["What is a food you don't like?",
+     "I don't like food that is too oily or extremely spicy."]
+
+],
+
+
+"Friends":[
+
+    ["Tell me about your best friend.",
+     "My best friend is someone I can trust and talk to easily."],
+
+    ["How often do you meet your friends?",
+     "I usually meet my friends when we have free time."],
+
+    ["What do you normally do together?",
+     "We usually talk, eat together, watch movies, or go somewhere."],
+
+    ["What qualities make someone a good friend?",
+     "A good friend should be honest, supportive, and trustworthy."]
+
+],
+
+
+"Technology":[
+
+    ["How often do you use technology?",
+     "I use technology every day for work, learning, and communication."],
+
+    ["What technology do you use most?",
+     "I use my computer and smartphone the most."],
+
+    ["Has technology made life easier?",
+     "Yes, technology has made communication and learning much easier."],
+
+    ["What technology would you like to learn?",
+     "I would like to learn more about artificial intelligence."]
+
+],
+
+
+"Interview":[
+
+    ["Let's practice an interview. Tell me about yourself.",
+     "I am a motivated professional who enjoys learning and solving problems."],
+
+    ["What are your strengths?",
+     "My strengths are problem solving, learning quickly, and working hard."],
+
+    ["What is one weakness you are improving?",
+     "Sometimes I focus too much on details, so I am learning to manage my time better."],
+
+    ["Why should a company hire you?",
+     "A company should hire me because I am responsible, willing to learn, and committed to my work."],
+
+    ["Where do you see yourself in five years?",
+     "I see myself as an experienced professional with strong technical and communication skills."],
+
+    ["Why do you want to improve your English?",
+     "I want to improve my English because communication is important for my career."]
+
+]
+
+};
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function openPage(id,button){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            page=>page.classList.remove("active")
+        );
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(
+            button=>button.classList.remove("active")
+        );
+
+    if(button)
+        button.classList.add("active");
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+}
+
+
+function toggleMenu(force){
+    const sidebar=document.getElementById("sidebar");
+    const overlay=document.getElementById("overlay");
+    const open=typeof force==="boolean"?force:!sidebar.classList.contains("open");
+    sidebar.classList.toggle("open",open);
+    overlay.classList.toggle("show",open);
+    overlay.setAttribute("aria-hidden",String(!open));
+}
+
+
+/* =========================================================
+   TOPIC
+========================================================= */
+
+function chooseTopic(element,topic){
+
+    document
+        .querySelectorAll(".topic")
+        .forEach(
+            x=>x.classList.remove("selected")
+        );
+
+    element.classList.add("selected");
+
+    currentTopic=topic;
+
+    document
+        .getElementById("topicHeader")
+        .textContent=
+        "Topic: "+topic+
+        " • 60-minute conversation";
+
+    document
+        .getElementById("topicSide")
+        .textContent=topic;
+
+}
+
+
+/* =========================================================
+   RANDOM TOPIC
+========================================================= */
+
+function getRandomTopic(){
+
+    const topics=[
+        "Daily Life",
+        "Work & Career",
+        "Travel",
+        "Food",
+        "Friends",
+        "Technology",
+        "Interview"
+    ];
+
+    return topics[
+        Math.floor(
+            Math.random()*topics.length
+        )
+    ];
+
+}
+
+
+/* =========================================================
+   START SESSION
+========================================================= */
+
+function clearSessionTimers(){sessionTimeouts.forEach(clearTimeout);sessionTimeouts=[];}
+
+function beginSession(){
+    if(sessionRunning) return;
+    clearSessionTimers();
+    if(currentTopic==="Random") currentTopic=getRandomTopic();
+    selectedPracticeDay=selectedPracticeDay||state.currentDay;
+    sessionRunning=true; recording=false; secondsLeft=3600; userTurns=0; totalWords=0; totalScore=0; conversationIndex=0; currentSpeech=""; currentTarget=""; currentSpokenText=""; conversationPool=getConversationPool(currentTopic); usedAISentences=new Set(); usedTargetSentences=new Set();
+    speechSynthesisSafeCancel();
+    const body=document.getElementById("conversationBody");
+    body.innerHTML="";
+    document.getElementById("userTurn").classList.remove("visible");
+    syncTopicUI(); updateTimer(); updateTurnCounter();
+    document.getElementById("status").textContent="🤖 AI is preparing to speak...";
+    clearInterval(timerInterval); timerInterval=setInterval(updateTimer,1000);
+    sessionTimeouts.push(setTimeout(startConversation,500));
+}
+
+function syncTopicUI(){
+    document.getElementById("topicHeader").textContent=`Topic: ${currentTopic} • 60-minute conversation`;
+    document.getElementById("topicSide").textContent=currentTopic;
+    document.querySelectorAll(".topic").forEach(el=>el.classList.toggle("selected",el.textContent.includes(currentTopic)));
+}
+
+function speechSynthesisSafeCancel(){try{if("speechSynthesis" in window)speechSynthesis.cancel();}catch(e){}}
+
+
+/* =========================================================
+   START CONVERSATION
+========================================================= */
+
+function getConversationPool(topic){
+    const base=scripts[topic]||scripts["Daily Life"]||[];
+    const topicQuestions={
+        "Daily Life":[
+            "What was the best part of your morning today?","What usually gives you energy during the day?","What is one small habit you want to improve?","How do you normally organize a busy day?","What do you enjoy doing when you finally get some free time?","What is something you would like to do more often?","How has your routine changed recently?","What part of your day feels the most relaxing?","What is one thing that makes an ordinary day better?","If you could change one part of your routine, what would it be?"
+        ],
+        "Work & Career":[
+            "What part of your work requires the most concentration?","How do you prepare before starting an important task?","Tell me about a work problem you solved recently.","What kind of projects do you enjoy the most?","How do you learn a new tool at work?","What makes teamwork successful for you?","How do you react when a deadline becomes difficult?","What professional skill would you like to strengthen next?","What kind of workplace helps you perform your best?","What achievement at work are you proud of?"
+        ],
+        "Travel":[
+            "What would your ideal weekend trip look like?","How do you choose a place to visit?","Tell me about a place you would happily visit twice.","What do you enjoy most about arriving in a new city?","How do you usually plan your travel budget?","What local experience would you never want to miss?","Would you rather travel slowly or visit many places quickly?","What makes accommodation comfortable for you?","How do you handle an unexpected problem while traveling?","What destination would you recommend to a friend?"
+        ],
+        "Food":[
+            "What meal could you eat regularly without getting bored?","What food reminds you of home?","How would you describe your favorite dish to a visitor?","What do you usually order when trying a new restaurant?","What is one cooking skill you want to learn?","How do you decide what to eat on a busy day?","What makes a meal memorable for you?","Do you prefer experimenting with food or choosing familiar dishes?","What is a simple meal you make well?","What food would you introduce to someone visiting your city?"
+        ],
+        "Friends":[
+            "What do you value most in a friendship?","How do you usually stay in touch with close friends?","What is your idea of a great day with friends?","How do friends influence your decisions?","What makes a conversation with a friend enjoyable?","How do you support a friend who is having a difficult day?","What activity would you like to try with your friends?","Do you prefer a small group or a large group of friends?","What is a funny memory you still remember clearly?","What makes someone easy to trust?"
+        ],
+        "Technology":[
+            "Which piece of technology saves you the most time?","How has technology changed the way you learn?","What app or tool do you use almost every day?","What technology do you think will change work in the future?","How do you decide whether a new tool is worth learning?","What is one technology problem that annoys you?","Do you prefer simple tools or feature-rich tools?","How do you protect your important digital information?","What technology would make your daily life easier?","What skill should everyone learn in the digital age?"
+        ],
+        "Interview":[
+            "How would you describe yourself to a new colleague?","What type of work environment helps you grow?","Tell me about a time you learned from a mistake.","How do you prioritize several tasks at once?","What motivates you when work becomes difficult?","How do you explain a technical idea to a non-technical person?","What kind of responsibility would you like to take next?","How do you respond to constructive feedback?","What makes you a dependable team member?","What would success look like for you one year from now?"
+        ]
+    };
+    const questions=topicQuestions[topic]||topicQuestions["Daily Life"];
+    const pool=[];
+    base.forEach(x=>pool.push({q:x[0],a:x[1]}));
+    questions.forEach(q=>pool.push({q,a:createModelAnswer(topic,q)}));
+    // Create additional natural follow-up prompts from reusable but non-identical forms.
+    const followups=[
+        "Why does that matter to you?","What makes you feel that way?","Can you give me a real example?","Has your opinion changed over time?","What would you recommend to someone in the same situation?","What would you do differently next time?","How did you first become interested in that?","What is the biggest challenge there?","What is one advantage and one disadvantage?","What would your ideal version of that look like?"
+    ];
+    followups.forEach((q,i)=>pool.push({q:q+" Tell me a little more about it.",a:createModelAnswer(topic,q)}));
+    return pool;
+}
+
+function createModelAnswer(topic,q){
+    // Build the practice sentence from the question so every prompt has a
+    // different model answer instead of recycling one sentence.
+    const clean=q.replace(/[?!.]+$/g,"").trim();
+    const lower=clean.charAt(0).toLowerCase()+clean.slice(1);
+    const endings=[
+        "because it is important to me.",
+        "because it affects my everyday experience.",
+        "because I have learned something useful from it.",
+        "because it helps me make better decisions.",
+        "because I want to become more confident in that area.",
+        "because it gives me a practical way to improve.",
+        "because my experience has taught me to think about it carefully.",
+        "because I can connect it to something I have experienced.",
+        "because it is one area where I want to keep learning.",
+        "because I believe a simple approach usually works best.",
+        "because it can make a real difference in my life.",
+        "because I enjoy thinking about practical solutions.",
+        "because I have seen both good and difficult sides of it.",
+        "because I would like to handle it more naturally.",
+        "because it is a useful lesson for the future.",
+        "because I think communication makes a big difference.",
+        "because I prefer to learn through real examples.",
+        "because it gives me an opportunity to grow.",
+        "because I want to make steady progress rather than rush.",
+        "because I can explain it better when I use a real situation."
+    ];
+    let hash=0;
+    for(let i=0;i<clean.length;i++) hash=(hash+clean.charCodeAt(i)*(i+1))%endings.length;
+    return `I would say that ${lower} is something I can relate to, ${endings[hash]}`;
+}
+
+let conversationPool=[];
+let usedAISentences=new Set();
+let usedTargetSentences=new Set();
+
+function getNextConversation(){
+    if(!conversationPool.length) conversationPool=getConversationPool(currentTopic);
+    // Never reuse an AI sentence or model answer during this session.
+    for(let i=0;i<conversationPool.length;i++){
+        const item=conversationPool[conversationIndex%conversationPool.length];
+        conversationIndex++;
+        if(!usedAISentences.has(item.q)&&!usedTargetSentences.has(item.a)){
+            usedAISentences.add(item.q);
+            usedTargetSentences.add(item.a);
+            return item;
+        }
+    }
+    // If the pool is exhausted, generate a fresh contextual question instead of repeating.
+    const n=usedAISentences.size+1;
+    const qVariants=[
+        "one personal example you have not mentioned yet",
+        "one small detail that people often overlook",
+        "one lesson you have learned from experience",
+        "one change you would make if you had the opportunity",
+        "one thing you would recommend to a beginner",
+        "one surprising thing you have noticed",
+        "one goal you would like to achieve",
+        "one challenge you would like to handle better",
+        "one memory that explains your opinion",
+        "one reason this matters to you"
+    ];
+    const aVariants=[
+        "I can explain it with a simple example.",
+        "I can describe it from my own experience.",
+        "I can give a practical reason for that.",
+        "I can explain what I would do in that situation.",
+        "I can share what I learned from it.",
+        "I can describe how I would approach it.",
+        "I can give an example from everyday life.",
+        "I can explain why that is important to me.",
+        "I can compare it with another experience.",
+        "I can describe what I would improve next time."
+    ];
+    const q=`Let's explore this from another angle. What is ${qVariants[n%qVariants.length]} about ${currentTopic.toLowerCase()}?`;
+    const a=`My answer is that ${currentTopic.toLowerCase()} is important to me for a practical reason. ${aVariants[n%aVariants.length]}`;
+    const item={q,a};
+    usedAISentences.add(item.q); usedTargetSentences.add(item.a);
+    return item;
+}
+
+function startConversation(){
+    if(!sessionRunning)return;
+    const item=getNextConversation();
+    speakAI(item.q,()=>showTarget(item.a));
+}
+
+
+/* =========================================================
+   AI SPEECH
+========================================================= */
+
+function speakAI(text,finished){
+    if(!sessionRunning)return;
+    currentSpeech=text; addAITurn(text);
+    if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined"){
+        document.getElementById("status").textContent="🤖 AI message shown. Your turn.";
+        sessionTimeouts.push(setTimeout(()=>{if(sessionRunning)finished();},250)); return;
+    }
+    try{
+        speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance(text);
+        u.lang="en-US"; u.rate=state.level==="Beginner"?.82:state.level==="Elementary"?.88:.94; u.pitch=1;
+        u.onstart=()=>{if(sessionRunning)document.getElementById("status").textContent="🤖 AI is speaking...";};
+        u.onend=()=>{if(sessionRunning){document.getElementById("status").textContent="👤 Your turn — read and speak."; finished();}};
+        u.onerror=()=>{if(sessionRunning){document.getElementById("status").textContent="AI voice unavailable. Read the message, then speak.";finished();}};
+        speechSynthesis.speak(u);
+    }catch(e){document.getElementById("status").textContent="AI voice unavailable. Read the message, then speak.";sessionTimeouts.push(setTimeout(()=>{if(sessionRunning)finished();},250));}
+}
+
+
+/* =========================================================
+   ADD AI MESSAGE
+========================================================= */
+
+function addAITurn(text){
+
+    const body=
+        document
+        .getElementById("conversationBody");
+
+    const message=
+        document.createElement("div");
+
+    message.className=
+        "message ai";
+
+    message.innerHTML=`
+
+        <div class="message-label">
+            AI Teacher
+        </div>
+
+        <div class="message-bubble">
+            ${escapeHTML(text)}
+        </div>
+
+        <button class="replay"
+                onclick="replaySentence(${JSON.stringify(text)})">
+            🔊 Listen again
+        </button>
+
+    `;
+
+    body.appendChild(message);
+
+    body.scrollTop=
+        body.scrollHeight;
+
+}
+
+
+/* =========================================================
+   REPLAY
+========================================================= */
+
+function replaySentence(text){
+
+    if(!("speechSynthesis" in window))
+        return;
+
+    speechSynthesis.cancel();
+
+    const utterance=
+        new SpeechSynthesisUtterance(text);
+
+    utterance.lang="en-US";
+
+    utterance.rate=.82;
+
+    speechSynthesis.speak(utterance);
+
+}
+
+
+function repeatAI(){
+
+    if(currentSpeech)
+        replaySentence(currentSpeech);
+
+}
+
+
+/* =========================================================
+   TARGET SENTENCE
+========================================================= */
+
+function showTarget(sentence){
+
+    if(!sessionRunning)
+        return;
+
+    currentTarget=sentence;
+
+    document
+        .getElementById("targetSentence")
+        .textContent=sentence;
+
+    document
+        .getElementById("targetNote")
+        .textContent=
+        "Read once. Then say it naturally.";
+
+    document
+        .getElementById("userTurn")
+        .classList.add("visible");
+
+}
+
+
+/* =========================================================
+   SPEECH RECOGNITION
+========================================================= */
+
+function createRecognition(){
+
+    const SpeechRecognition=
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition)
+        return null;
+
+    const r=
+        new SpeechRecognition();
+
+    r.lang="en-US";
+
+    r.continuous=false;
+
+    r.interimResults=true;
+
+    r.maxAlternatives=1;
+
+
+    r.onstart=()=>{
+
+        recording=true;
+
+        currentSpokenText="";
+
+        document
+            .getElementById("micButton")
+            .classList.add("recording");
+
+        document
+            .getElementById("status")
+            .textContent=
+            "🎤 Listening... speak now.";
+
+    };
+
+
+    r.onresult=(event)=>{
+
+        let text="";
+
+        for(
+            let i=event.resultIndex;
+            i<event.results.length;
+            i++
+        ){
+
+            text+=
+                event.results[i][0]
+                    .transcript;
+
+        }
+
+        currentSpokenText=text;
+
+        document
+            .getElementById("status")
+            .textContent=
+            "You said: "+text;
+
+    };
+
+
+    r.onerror=(event)=>{
+
+        recording=false;
+
+        document
+            .getElementById("micButton")
+            .classList.remove("recording");
+
+        if(
+            event.error==="not-allowed"
+        ){
+
+            document
+                .getElementById("status")
+                .textContent=
+                "Microphone permission was blocked.";
+
+        }else{
+
+            document
+                .getElementById("status")
+                .textContent=
+                "I couldn't hear you. Try again.";
+
+        }
+
+    };
+
+
+    r.onend=()=>{
+
+        recording=false;
+
+        document
+            .getElementById("micButton")
+            .classList.remove("recording");
+
+        if(
+            currentSpokenText &&
+            currentSpokenText.trim()
+        ){
+
+            processAnswer(
+                currentSpokenText.trim()
+            );
+
+        }else{
+
+            document
+                .getElementById("status")
+                .textContent=
+                "I didn't hear you. Please try again.";
+
+        }
+
+    };
+
+    return r;
+
+}
+
+
+let currentSpokenText="";
+
+
+/* =========================================================
+   MICROPHONE
+========================================================= */
+
+function toggleMic(){
+
+    if(!sessionRunning){
+
+        document
+            .getElementById("status")
+            .textContent=
+            "Start today's conversation first.";
+
+        return;
+
+    }
+
+    if(!recognition){
+
+        recognition=
+            createRecognition();
+
+    }
+
+    if(!recognition){
+
+        alert(
+            "Speech Recognition is not supported. Please use Chrome or Edge."
+        );
+
+        return;
+
+    }
+
+    if(recording){
+
+        recognition.stop();
+
+        return;
+
+    }
+
+    try{
+
+        currentSpokenText="";
+
+        recognition.start();
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* =========================================================
+   PROCESS ANSWER
+========================================================= */
+
+function processAnswer(text){
+    if(!sessionRunning)return;
+    document.getElementById("userTurn").classList.remove("visible");
+    addUserTurn(text);
+    userTurns++;
+    totalWords+=text.split(/\s+/).filter(Boolean).length;
+    totalScore+=evaluateSpeech(text);
+    updateTurnCounter();
+
+    // Make the next exchange react naturally to what the learner just said.
+    const item=getNextConversation();
+    let aiText=item.q;
+    const lower=text.toLowerCase().trim();
+    if(lower){
+        if(/^(yes|yeah|yep|sure|definitely)\b/.test(lower)) aiText="That's good to hear. "+aiText;
+        else if(/^(no|not really|never)\b/.test(lower)) aiText="I understand. "+aiText;
+        else if(text.split(/\s+/).length>=12) aiText="That's interesting. Thanks for explaining that. "+aiText;
+        else if(text.split(/\s+/).length<=3) aiText="I see. Let me ask you something a little deeper. "+aiText;
+    }
+    // Acknowledge the learner without repeating the exact previous AI sentence.
+    usedAISentences.add(aiText);
+    document.getElementById("status").textContent="🤖 AI is thinking...";
+    sessionTimeouts.push(setTimeout(()=>{
+        if(!sessionRunning)return;
+        speakAI(aiText,()=>showTarget(item.a));
+    },650));
+}
+
+
+/* =========================================================
+   ADD USER MESSAGE
+========================================================= */
+
+function addUserTurn(text){
+
+    const body=
+        document
+        .getElementById("conversationBody");
+
+    const message=
+        document.createElement("div");
+
+    message.className=
+        "message user";
+
+    message.innerHTML=`
+
+        <div class="message-label">
+            You
+        </div>
+
+        <div class="message-bubble">
+            ${escapeHTML(text)}
+        </div>
+
+    `;
+
+    body.appendChild(message);
+
+    body.scrollTop=
+        body.scrollHeight;
+
+}
+
+
+/* =========================================================
+   SPEECH SCORE
+========================================================= */
+
+function evaluateSpeech(text){
+
+    const words=
+        text
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    let score=62;
+
+
+    if(words.length>=5)
+        score+=7;
+
+    if(words.length>=10)
+        score+=7;
+
+    if(words.length>=15)
+        score+=6;
+
+    if(/[.!?]$/.test(text))
+        score+=3;
+
+
+    const lower=
+        text.toLowerCase();
+
+
+    const mistakes=[
+
+        "i am go",
+        "i go yesterday",
+        "he go",
+        "she go",
+        "he have",
+        "she have",
+        "i am work",
+        "yesterday i go"
+
+    ];
+
+
+    mistakes.forEach(
+        mistake=>{
+
+            if(
+                lower.includes(mistake)
+            )
+                score-=8;
+
+        }
+    );
+
+
+    return Math.max(
+        35,
+        Math.min(95,score)
+    );
+
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function updateTimer(){
+    const timer=document.getElementById("timer");
+    if(!timer)return;
+    const mins=Math.floor(Math.max(0,secondsLeft)/60); const secs=Math.max(0,secondsLeft)%60;
+    timer.textContent=String(mins).padStart(2,"0")+":"+String(secs).padStart(2,"0");
+    timer.classList.toggle("warning",secondsLeft<=600&&secondsLeft>120); timer.classList.toggle("danger",secondsLeft<=120);
+    if(sessionRunning){
+        if(secondsLeft<=0){finishSession();return;}
+        secondsLeft--;
+    }
+}
+
+
+/* =========================================================
+   TURN COUNTER
+========================================================= */
+
+function updateTurnCounter(){
+
+    document
+        .getElementById("turnCount")
+        .textContent=
+        userTurns+" turns";
+
+}
+
+
+/* =========================================================
+   FINISH SESSION
+========================================================= */
+
+function finishSession(){
+    if(!sessionRunning)return;
+    sessionRunning=false; clearInterval(timerInterval); timerInterval=null; clearSessionTimers(); speechSynthesisSafeCancel();
+    if(recognition&&recording){try{recognition.stop();}catch(e){}}
+    recording=false; document.getElementById("micButton").classList.remove("recording");
+    const average=userTurns?Math.round(totalScore/userTurns):0;
+    state.score=average; state.bestScore=Math.max(state.bestScore||0,average); state.sessions++;
+    const today=new Date().toISOString().slice(0,10);
+    if(state.lastSessionDate!==today){
+        const prev=state.lastSessionDate?new Date(state.lastSessionDate):null;
+        const now=new Date(today);
+        const diff=prev?Math.round((now-prev)/86400000):999;
+        state.streak=diff===1?(state.streak||0)+1:1; state.lastSessionDate=today;
+    }
+    const practicingDay=selectedPracticeDay||state.currentDay;
+    if(!state.completedDays.includes(practicingDay))state.completedDays.push(practicingDay);
+    // Days are independently accessible; completing a day no longer forces Day 2, Day 3, etc.
+    // Keep currentDay as the user's chosen/default day for dashboard purposes.
+    saveState(); generateReport(); openPage("report",document.querySelectorAll(".nav button")[2]);
+    toast(userTurns?`Session complete — score ${average}%.`:"Session ended. Try a few spoken turns next time.",userTurns?"success":"error");
+}
+
+
+/* =========================================================
+   SELECTED PRACTICE DAY
+========================================================= */
+
+let selectedPracticeDay=
+    state.currentDay;
+
+
+/* =========================================================
+   30 DAY PLAN
+========================================================= */
+
+function renderDays(){
+
+    const grid=
+        document.getElementById("daysGrid");
+
+    grid.innerHTML="";
+
+
+    curriculum.forEach(
+        (title,index)=>{
+
+            const day=index+1;
+
+            const completed=
+                state.completedDays
+                    .includes(day);
+
+            // All 30 days are available immediately. Completion never locks a day.
+            const unlocked=true;
+            const current=day===selectedPracticeDay;
+
+
+            const card=
+                document.createElement("div");
+
+
+            let classes="day-card";
+
+
+            if(completed)
+                classes+=" completed";
+
+            if(current)
+                classes+=" current";
+
+            if(!unlocked)
+                classes+=" locked";
+
+            card.className=classes;
+
+
+            let status=completed ? "✓ Completed • Practice again" : "Available • Start anytime";
+            if(current) status=completed ? "✓ Completed • Practicing now" : "● Ready to practice";
+
+
+            card.innerHTML=`
+
+                <div class="day-number">
+                    DAY ${day}
+                </div>
+
+                <h3>
+                    ${title}
+                </h3>
+
+                <div class="day-status">
+                    ${status}
+                </div>
+
+            `;
+
+
+            /*
+               ONLY completed/current/unlocked
+               days are clickable.
+
+               This allows user to return
+               to Day 1 after reaching Day 3.
+            */
+
+            if(unlocked){
+
+                card.addEventListener(
+                    "click",
+                    ()=>{
+
+                        selectedPracticeDay=day;
+
+                        startSelectedDay(day);
+
+                    }
+                );
+
+            }
+
+
+            grid.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   START SELECTED DAY
+========================================================= */
+
+function startSelectedDay(day){
+
+    selectedPracticeDay=day;
+
+    /*
+       Changing selected day does NOT change
+       the user's current course progress.
+    */
+
+    openPage(
+        "practice",
+        document.querySelectorAll(
+            ".nav button"
+        )[1]
+    );
+
+
+    /*
+       Map old days to topics.
+    */
+
+    const topicMap={
+
+        1:"Daily Life",
+        2:"Daily Life",
+        3:"Daily Life",
+        4:"Friends",
+        5:"Friends",
+        6:"Food",
+        7:"Food",
+        8:"Friends",
+        9:"Daily Life",
+        10:"Travel",
+        11:"Travel",
+        12:"Daily Life",
+        13:"Daily Life",
+        14:"Friends",
+        15:"Daily Life",
+        16:"Work & Career",
+        17:"Work & Career",
+        18:"Work & Career",
+        19:"Work & Career",
+        20:"Work & Career",
+        21:"Interview",
+        22:"Work & Career",
+        23:"Technology",
+        24:"Food",
+        25:"Work & Career",
+        26:"Daily Life",
+        27:"Work & Career",
+        28:"Work & Career",
+        29:"Daily Life",
+        30:"Interview"
+
+    };
+
+
+    currentTopic=
+        topicMap[day] ||
+        "Daily Life";
+
+
+    /*
+       Update topic selection.
+    */
+
+    document
+        .querySelectorAll(".topic")
+        .forEach(
+            x=>x.classList.remove("selected")
+        );
+
+
+    document
+        .querySelectorAll(".topic")
+        .forEach(
+            x=>{
+
+                if(
+                    x.textContent
+                    .includes(currentTopic)
+                )
+                    x.classList.add("selected");
+
+            }
+        );
+
+
+    beginSession();
+
+}
+
+
+/* =========================================================
+   REPORT
+========================================================= */
+
+function generateReport(){
+
+    const score=
+        state.score || 0;
+
+
+    document
+        .getElementById("finalScore")
+        .textContent=
+        score+"%";
+
+
+    document
+        .getElementById("fluency")
+        .textContent=
+        Math.min(
+            99,
+            score+2
+        )+"%";
+
+
+    document
+        .getElementById("grammar")
+        .textContent=
+        Math.max(
+            45,
+            score-2
+        )+"%";
+
+
+    document
+        .getElementById("vocabulary")
+        .textContent=
+        Math.min(
+            98,
+            score+1
+        )+"%";
+
+
+    document
+        .getElementById("confidence")
+        .textContent=
+        Math.min(
+            99,
+            score+4
+        )+"%";
+
+
+    let feedback;
+
+
+    if(score<60){
+
+        feedback=
+        "Good beginning. Your priority is to speak every day without fear. Focus on completing the sentences and listening carefully to the AI.";
+
+    }
+    else if(score<75){
+
+        feedback=
+        "You're making good progress. Try to speak longer sentences and avoid translating every word from your native language.";
+
+    }
+    else if(score<85){
+
+        feedback=
+        "Very good progress. Your next goal is natural conversation. Try to remember useful phrases instead of individual words.";
+
+    }
+    else{
+
+        feedback=
+        "Excellent progress! You are becoming comfortable speaking English. Start practicing opinions, storytelling and spontaneous conversations.";
+
+    }
+
+
+    document
+        .getElementById("finalFeedback")
+        .textContent=
+        feedback;
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function loadSettings(){
+
+    document
+        .getElementById("name")
+        .value=
+        state.name || "";
+
+
+    document
+        .getElementById("level")
+        .value=
+        state.level || "Beginner";
+
+}
+
+
+function saveSettings(){
+
+    state.name=
+        document
+        .getElementById("name")
+        .value;
+
+
+    state.level=
+        document
+        .getElementById("level")
+        .value;
+
+
+    saveState();
+
+
+    alert(
+        "Settings saved successfully."
+    );
+
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+function saveState(){
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
+    catch(e){console.warn("Could not save progress:",e);toast("Progress could not be saved in this browser.","error");}
+    updateDashboard(); renderDays();
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function updateDashboard(){
+
+    const completedCount=state.completedDays.length;
+    const percent=Math.round((completedCount/30)*100);
+
+
+    document
+        .getElementById("sidePercent")
+        .textContent=
+        percent+"%";
+
+
+    document
+        .getElementById("sideBar")
+        .style.width=
+        percent+"%";
+
+
+    document
+        .getElementById("sideDay")
+        .textContent=
+        state.currentDay;
+
+
+    document
+        .getElementById("homeDay")
+        .textContent=
+        "Day "+
+        state.currentDay+
+        " / 30";
+
+
+    document
+        .getElementById("homeDayStat")
+        .textContent=
+        state.currentDay+
+        " / 30";
+
+
+    document
+        .getElementById("sessionsStat")
+        .textContent=
+        state.sessions;
+
+
+    document
+        .getElementById("scoreStat")
+        .textContent=
+        state.score+"%";
+
+
+    document
+        .getElementById("streakStat")
+        .textContent=
+        state.streak+
+        " 🔥";
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(text){
+
+    const div=
+        document.createElement("div");
+
+    div.textContent=text;
+
+    return div.innerHTML;
+
+}
+
+
+function toast(message,type="success"){
+    const old=document.querySelector(".toast"); if(old)old.remove();
+    const el=document.createElement("div"); el.className=`toast ${type}`; el.textContent=message; document.body.appendChild(el);
+    setTimeout(()=>el.remove(),3200);
+}
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+loadSettings();
+try{ if("speechSynthesis" in window) speechSynthesis.getVoices(); }catch(e){}
+updateDashboard();
+
+renderDays();
+
+updateTimer();
+
+</script>
+
+</body>
+</html>
